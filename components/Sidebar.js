@@ -46,7 +46,7 @@ const Sidebar = () => {
 
       <div className="hoverEffect text-gray-700 flex items-center justify-center xl:justify-start mt-auto">
         <Image
-          src="https://avatars.githubusercontent.com/u/18500014?v=4"
+          src="https://avatars.githubusercontent.com/u/18500014"
           alt="user image"
           width="50"
           height="50"
