@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import { Inter } from '@next/font/google';
+import Sidebar from '../components/Sidebar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -13,7 +14,16 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      <main className="flex min-h-screen max-w-7xl mx-auto">
+        {/* Sidebar */}
+        <Sidebar />
+
+        {/* Feed */}
+
+        {/* Widgets */}
+
+        {/* Modal */}
+      </main>
     </>
   );
 }
