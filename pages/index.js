@@ -2,10 +2,11 @@ import Head from 'next/head';
 import { Inter } from '@next/font/google';
 import Sidebar from '../components/Sidebar';
 import Feed from '../components/Feed';
+import Widgets from '../components/Widgets';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export default function Home() {
+export default function Home({ newsResults }) {
   return (
     <>
       <Head>
@@ -23,9 +24,24 @@ export default function Home() {
         <Feed />
 
         {/* Widgets */}
+        <Widgets newsResults={newsResults.articles} />
 
         {/* Modal */}
       </main>
     </>
   );
+}
+
+// https://saurav.tech/NewsAPI/top-headlines/category/business/us.json
+
+export async function getServerSideProps() {
+  const newsResults = await fetch(
+    'https://saurav.tech/NewsAPI/top-headlines/category/business/us.json'
+  ).then((res) => res.json());
+
+  return {
+    props: {
+      newsResults,
+    },
+  };
 }
