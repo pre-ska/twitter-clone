@@ -11,7 +11,26 @@ export const authOptions = {
     // ...add more providers here
   ],
   pages: {
-    signin: '/auth/signin',
+    signIn: '/auth/signin',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    // dodajem dodatna polja na user objekt od next autha
+    // želim imati username - dobiven od name (izbacim space)
+    // želim imati id - dobiven od tokena.sub
+    async session({ session, token }) {
+      // session.user.username = 'aaaaaaaaaaaaaaa';
+      // console.log(session);
+      if (session) {
+        session.user.username = session?.user?.name
+          ?.split(' ')
+          .join('')
+          .toLowerCase();
+        session.user.uid = token.sub;
+        return session;
+      }
+    },
   },
 };
+
 export default NextAuth(authOptions);
