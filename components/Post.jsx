@@ -6,6 +6,7 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 import { HeartIcon } from '@heroicons/react/24/solid';
+import Moment from 'react-moment';
 
 const likes = [1, 2];
 const hasLiked = true;
@@ -16,7 +17,7 @@ function Post({ post }) {
       {/* user image */}
       <img
         className="h-11 w-11 rounded-full mr-4"
-        src={post?.userImg}
+        src={post?.data().userImg}
         alt="user-img"
       />
       {/* right side */}
@@ -27,12 +28,13 @@ function Post({ post }) {
           {/* post user info */}
           <div className="flex items-center space-x-1 whitespace-nowrap">
             <h4 className="font-bold text-[15px] sm:text-[16px] hover:underline">
-              {post?.name}
+              {post?.data().name}
             </h4>
-            <span className="text-sm sm:text-[15px]">@{post?.username} - </span>
+            <span className="text-sm sm:text-[15px]">
+              @{post?.data().username} -{' '}
+            </span>
             <span className="text-sm sm:text-[15px] hover:underline">
-              {/* <Moment fromNow>{post?.timestamp?.toDate()}</Moment> */}
-              {post?.timestamp}
+              <Moment fromNow>{post?.timestamp?.toDate()}</Moment>
             </span>
           </div>
 
@@ -46,7 +48,7 @@ function Post({ post }) {
           onClick={() => router.push(`/posts/${id}`)}
           className="text-gray-800 text-[15px sm:text-[16px] mb-2"
         >
-          {post?.text}
+          {post?.data().text}
         </p>
 
         {/* post image */}
@@ -54,7 +56,7 @@ function Post({ post }) {
         <img
           // onClick={() => router.push(`/posts/${id}`)}
           className="rounded-2xl mr-2"
-          src={post?.img}
+          src={post?.data().image}
           alt=""
         />
 

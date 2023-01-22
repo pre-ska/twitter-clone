@@ -39,12 +39,10 @@ function Input() {
     const imageRef = ref(storage, `posts/${docRef.id}/image`);
 
     if (selectedFile) {
-      console.log(selectedFile);
-      await uploadString(imageRef, 'data_url').then(async (data) => {
-        const downloadUrl = await getDownloadURL(imageRef);
-
+      await uploadString(imageRef, selectedFile, 'data_url').then(async () => {
+        const downloadURL = await getDownloadURL(imageRef);
         await updateDoc(doc(db, 'posts', docRef.id), {
-          image: downloadUrl,
+          image: downloadURL,
         });
       });
     }
@@ -92,7 +90,7 @@ function Input() {
                 {!loading && (
                   <XCircleIcon
                     onClick={() => setSelectedFile()}
-                    className="h-7 text-black absolute cursor-pointer rounded-full opacity-0
+                    className="h-7 m-1 text-black absolute cursor-pointer rounded-full opacity-0
                   group-hover:opacity-100 transition-opacity shadow-md shadow-white "
                   />
                 )}
