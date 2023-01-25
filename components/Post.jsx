@@ -6,12 +6,59 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 import { HeartIcon } from '@heroicons/react/24/solid';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  setDoc,
+} from 'firebase/firestore';
+import { signIn, useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 import Moment from 'react-moment';
+import { db } from '../firebase';
 
-const likes = [1, 2];
-const hasLiked = true;
+const Post = ({ post }) => {
+  const [likes, setLikes] = useState([]);
+  const [hasLiked, setHasLiked] = useState(false);
+  const { data: session } = useSession();
 
-function Post({ post }) {
+  useEffect(() => {
+    // u startu svakog posta dohvaćam kolikciju like-ova za taj post
+    // to je array uid-a od korisnika koji su likeali ovaj post
+    const unsubscribe = onSnapshot(
+      collection(db, 'posts', post.id, 'likes'),
+      (snapshot) => setLikes(snapshot.docs)
+    );
+
+    return () => unsubscribe();
+  }, [db]);
+
+  useEffect(() => {
+    // u nizu likeova tražim index trenutno logiranog korisnika iz sessiona
+    // ako je index manji od 0, nije like-ao
+    setHasLiked(
+      likes.findIndex((like) => like.id === session?.user?.uid) !== -1
+    );
+  }, [likes]);
+
+  const likePost = async () => {
+    //ako je user logiran
+    if (session) {
+      // ako je user već likeao post, brišem njegov uid iz likes kolekcije za taj post
+      // ako nije, stvorim novi unos u likes kolekciji za taj post
+      if (hasLiked) {
+        await deleteDoc(doc(db, 'posts', post.id, 'likes', session?.user?.uid));
+      } else {
+        await setDoc(doc(db, 'posts', post.id, 'likes', session?.user?.uid), {
+          username: session?.user?.username,
+        });
+      }
+    } else {
+      // ako nije logiran a klikne heart...redirect na signIn page
+      signIn();
+    }
+  };
   return (
     <div className="flex p-3 cursor-pointer border-b border-gray-200">
       {/* user image */}
@@ -34,7 +81,7 @@ function Post({ post }) {
               @{post?.data().username} -{' '}
             </span>
             <span className="text-sm sm:text-[15px] hover:underline">
-              <Moment fromNow>{post?.timestamp?.toDate()}</Moment>
+              <Moment fromNow>{post?.data().timestamp?.toDate()}</Moment>
             </span>
           </div>
 
@@ -89,12 +136,12 @@ function Post({ post }) {
           <div className="flex items-center">
             {hasLiked ? (
               <HeartIcon
-                // onClick={likePost}
+                onClick={likePost}
                 className="h-9 w-9 hoverEffect p-2 text-red-600 hover:bg-red-100"
               />
             ) : (
               <HeartIcon
-                // onClick={likePost}
+                onClick={likePost}
                 className="h-9 w-9 hoverEffect p-2 hover:text-red-600 hover:bg-red-100"
               />
             )}
@@ -114,6 +161,6 @@ function Post({ post }) {
       </div>
     </div>
   );
-}
+};
 
 export default Post;
