@@ -13,10 +13,11 @@ import {
   onSnapshot,
   setDoc,
 } from 'firebase/firestore';
+import { deleteObject, ref } from 'firebase/storage';
 import { signIn, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Moment from 'react-moment';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 
 const Post = ({ post }) => {
   const [likes, setLikes] = useState([]);
@@ -59,6 +60,17 @@ const Post = ({ post }) => {
       signIn();
     }
   };
+
+  const deletePost = async () => {
+    if (window.confirm('Are you sure you want to delete this post')) {
+      deleteDoc(doc(db, 'posts', post.id));
+
+      // ako postoji slika u postu, obriši je
+      if (post.data().image)
+        deleteObject(ref(storage, `posts/${post.id}/image`));
+    }
+  };
+
   return (
     <div className="flex p-3 cursor-pointer border-b border-gray-200">
       {/* user image */}
@@ -66,6 +78,7 @@ const Post = ({ post }) => {
         className="h-11 w-11 rounded-full mr-4"
         src={post?.data().userImg}
         alt="user-img"
+        referrerPolicy="no-referrer"
       />
       {/* right side */}
       <div className="flex-1">
@@ -127,12 +140,12 @@ const Post = ({ post }) => {
               <span className="text-sm">{comments.length}</span>
             )} */}
           </div>
-          {/* {currentUser?.uid === post?.id && (
+          {session?.user?.uid === post?.data().id && (
             <TrashIcon
-                onClick={deletePost}
+              onClick={deletePost}
               className="h-9 w-9 hoverEffect p-2 hover:text-red-600 hover:bg-red-100"
             />
-          )} */}
+          )}
           <div className="flex items-center">
             {hasLiked ? (
               <HeartIcon
