@@ -17,12 +17,15 @@ import { deleteObject, ref } from 'firebase/storage';
 import { signIn, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Moment from 'react-moment';
+import { useRecoilState } from 'recoil';
+import { modalState } from '../atom/modalAtom';
 import { db, storage } from '../firebase';
 
 const Post = ({ post }) => {
   const [likes, setLikes] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
   const { data: session } = useSession();
+  const [open, setOpen] = useRecoilState(modalState);
 
   useEffect(() => {
     // u startu svakog posta dohvaćam kolikciju like-ova za taj post
@@ -126,15 +129,15 @@ const Post = ({ post }) => {
         <div className="flex justify-between text-gray-500 p-2">
           <div className="flex items-center select-none">
             <ChatBubbleLeftIcon
-              //   onClick={() => {
-              //     if (!currentUser) {
-              //       // signIn();
-              //       router.push("/auth/signin");
-              //     } else {
-              //       setPostId(id);
-              //       setOpen(!open);
-              //     }
-              //   }}
+              onClick={() => {
+                if (!session) {
+                  // signIn();
+                  router.push('/auth/signin');
+                } else {
+                  // setPostId(id);
+                  setOpen(!open);
+                }
+              }}
               className="h-9 w-9 hoverEffect p-2 hover:text-sky-500 hover:bg-sky-100"
             />
             {/* {comments.length > 0 && (
