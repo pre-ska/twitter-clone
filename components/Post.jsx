@@ -80,6 +80,7 @@ const Post = ({ post }) => {
         alt="user-img"
         referrerPolicy="no-referrer"
       />
+
       {/* right side */}
       <div className="flex-1">
         {/* Header */}
