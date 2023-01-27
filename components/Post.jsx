@@ -18,7 +18,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import Moment from 'react-moment';
 import { useRecoilState } from 'recoil';
-import { modalState } from '../atom/modalAtom';
+import { modalState, postIdState } from '../atom/modalAtom';
 import { db, storage } from '../firebase';
 
 const Post = ({ post }) => {
@@ -26,6 +26,7 @@ const Post = ({ post }) => {
   const [hasLiked, setHasLiked] = useState(false);
   const { data: session } = useSession();
   const [open, setOpen] = useRecoilState(modalState);
+  const [postId, setPostId] = useRecoilState(postIdState);
 
   useEffect(() => {
     // u startu svakog posta dohvaćam kolikciju like-ova za taj post
@@ -131,10 +132,10 @@ const Post = ({ post }) => {
             <ChatBubbleLeftIcon
               onClick={() => {
                 if (!session) {
-                  // signIn();
-                  router.push('/auth/signin');
+                  signIn();
+                  // router.push('/auth/signin');
                 } else {
-                  // setPostId(id);
+                  setPostId(post.id);
                   setOpen(!open);
                 }
               }}
