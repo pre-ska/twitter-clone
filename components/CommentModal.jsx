@@ -9,14 +9,24 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { db } from '../firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  onSnapshot,
+  serverTimestamp,
+} from 'firebase/firestore';
 import Moment from 'react-moment';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 function CommentModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const [postId] = useRecoilState(postIdState);
   const [post, setPost] = useState();
   const [input, setInput] = useState('');
+  const { data: session } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     if (postId) {
@@ -24,7 +34,20 @@ function CommentModal() {
     }
   }, [postId, db]);
 
-  const sendComment = () => {};
+  const sendComment = async () => {
+    await addDoc(collection(db, 'posts', postId, 'comments'), {
+      comment: input,
+      name: session.user.name,
+      username: session.user.username,
+      userImg: session.user.image,
+      timestamp: serverTimestamp(),
+    });
+
+    setOpen(false);
+    setInput('');
+    router.push(`posts/${postId}`);
+  };
+
   const addImageToPost = () => {};
 
   return (
@@ -68,7 +91,7 @@ function CommentModal() {
 
             <div className="flex  p-3 space-x-3">
               <img
-                src={post?.data()?.userImg}
+                src={session?.user?.image}
                 // src={currentUser.userImg}
                 alt="user-img"
                 className="h-11 w-11 rounded-full cursor-pointer hover:brightness-95"

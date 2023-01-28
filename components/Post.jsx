@@ -88,7 +88,6 @@ const Post = ({ post }) => {
       {/* right side */}
       <div className="flex-1">
         {/* Header */}
-
         <div className="flex items-center justify-between">
           {/* post user info */}
           <div className="flex items-center space-x-1 whitespace-nowrap">
@@ -141,9 +140,9 @@ const Post = ({ post }) => {
               }}
               className="h-9 w-9 hoverEffect p-2 hover:text-sky-500 hover:bg-sky-100"
             />
-            {/* {comments.length > 0 && (
+            {comments.length > 0 && (
               <span className="text-sm">{comments.length}</span>
-            )} */}
+            )}
           </div>
           {session?.user?.uid === post?.data().id && (
             <TrashIcon
